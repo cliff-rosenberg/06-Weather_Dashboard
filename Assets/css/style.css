@@ -1,0 +1,8 @@
+.myheader {
+    font-size: 4em;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    padding: 20px;
+    background-image: linear-gradient(to right, lightblue , darkblue);
+}

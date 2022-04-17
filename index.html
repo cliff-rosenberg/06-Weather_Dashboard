@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <link rel="stylesheet" href="./Assets/css/style.css">
+</head>
+<body>
+  <header class="myheader">Weather Dashboard</header>
+  <section class="section">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-one-third">Search for a City:
+          <input id="cityName" class="input is-medium" type="text" placeholder="City Name">
+          <button id="btnSearch" class="button is-info is-fullwidth" type="submit">Search</button>
+        </div>     
+        <div id="current-weather" class="column">
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="./Assets/js/script.js"></script>
+</body>
+</html>
