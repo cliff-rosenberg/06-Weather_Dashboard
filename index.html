@@ -5,23 +5,30 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weather Dashboard</title>
+  <!-- Load Bulma CSS framework and user CSS stylesheet -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
   <link rel="stylesheet" href="./Assets/css/style.css">
 </head>
 <body>
-  <header class="myheader">Weather Dashboard</header>
-  <section class="section">
-    <div class="container">
-      <div class="columns">
-        <div class="column is-one-third">Search for a City:
-          <input id="cityName" class="input is-medium" type="text" placeholder="City Name">
-          <button id="btnSearch" class="button is-info is-fullwidth" type="submit">Search</button>
-        </div>     
-        <div id="current-weather" class="column">
-        </div>
+  <header class="topPage">Weather Dashboard</header>
+  <!-- Page Contents -->
+    <div class="container is-fluid">
+      <div class="columns m-auto">
+          <!-- First Column -->
+          <div id="search-column" class="column is-one-quarter p-auto is-size-4 has-text-weight-medium has-text-left">Search for a City:
+            <!-- Search input here -->
+            <input id="cityName" class="input is-medium" type="text" placeholder="City Name">
+            <button id="btnSearch" class="button my-2 is-info is-fullwidth" type="submit">Search</button>
+            <hr class="my-1">
+          </div>
+          <!-- Second Column -->
+          <div id="current-weather" class="column">
+            <!-- content here -->
+          </div>
       </div>
     </div>
-  </section>
+  
+  <!-- Load JavaScript -->
   <script src="./Assets/js/script.js"></script>
 </body>
 </html>
