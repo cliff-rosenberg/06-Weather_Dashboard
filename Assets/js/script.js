@@ -13,14 +13,38 @@ function formatDate(date) {
         ].join('/');
 };
 
-// cities in local storage
-function storeCityName(cityStore) {
-    console.log('Button created for ' + cityStore);
-    // create a button for the stored search
+// recall all stroed cities and generate buttons for them
+// only called on initial page load
+function cityStoredRecall() {
+    let stored = localStorage.getItem("citiesWeather");
+    if (stored != null) {
+    citiesSaved = JSON.parse(stored);
+    for (let i = 0; i < citiesSaved.length; i++) {
+        let cityBtn = `<button class="button is-capitalized my-2 is-info is-fullwidth" type="submit">${citiesSaved[i]}</button>`;
+        let citiesPrev = document.getElementById("storedBtns");
+        citiesPrev.innerHTML += cityBtn;
+        };
+    };
+};
+
+function cityStorage() {
+    localStorage.setItem("citiesWeather", JSON.stringify(citiesSaved));
+};
+
+// create a button for the stored search
+function buttonCityName(cityStore) {
+    // check to see if button already exists
+    for (let i = 0; i < citiesSaved.length; i++) {
+        if (citiesSaved[i] === cityStore) {
+            return;
+        };
+    };
+    // create a button for the city
     let cityBtn = `<button class="button is-capitalized my-2 is-info is-fullwidth" type="submit">${cityStore}</button>`;
-    let citiesStored = document.getElementById("storedBtns");
-    citiesStored.innerHTML += cityBtn;
-    //localStorage.setItem("citiesWeather", JSON.stringify(cityObj));
+    let citiesPrev = document.getElementById("storedBtns");
+    citiesPrev.innerHTML += cityBtn;
+    citiesSaved.push(cityStore);
+    cityStorage();// puts into local storage
 };
 
 // turn city name into geolocation coordinates
@@ -30,7 +54,7 @@ async function getGeolocation (cityLookup) {
     let params = {'name': cityLookup, 'limit': '1'};
     url.search = new URLSearchParams(params);
     // put URL sent to 'fetch' into console window
-    console.log(url.href); 
+    console.log(url.href);
     // call fetch here, wait for reply
     let resp = await fetch(url.href);
     // make sure response is not an error
@@ -53,8 +77,7 @@ async function weatherRequest(lat, lon) {
     let url = new URL('https://api.openweathermap.org/data/2.5/onecall');
     let params = {'lat': cityLat, 'lon': cityLon, 'units': 'imperial', 'exclude': 'minutely,hourly','appid': '8ee63a0ac1d7da64365a8cddccb9a29f'};
     url.search = new URLSearchParams(params);
-    // put URL sent to 'fetch' into console window
-    console.log(url.href); 
+    console.log(url.href);  // put URL sent to 'fetch' into console window
     // call fetch here, wait for reply
     let resp = await fetch(url.href);
     // make sure response is not an error
@@ -66,14 +89,12 @@ async function weatherRequest(lat, lon) {
     };
 };
 
-
-
 // build out current weather in city after data is returned
 function displayWeatherCity(city, weatherObj) {
     let cityName = city;
     //console.log(city);
-    // store city name and created a saved button
-    storeCityName(city);
+    // create a saved button with city name
+    buttonCityName(city);
     // get date of forecast put into correct format
     let cityDate = new Date(weatherObj.current.dt * 1000);
     let formattedDate = formatDate(cityDate);
@@ -107,11 +128,9 @@ function displayWeatherCity(city, weatherObj) {
     let boxUV = document.createElement('p');
     boxUV.classList.add('pb-3');
     boxUV.innerHTML = "UV Index: " + weatherObj.current.uvi;
- 
     // Build out current weather box
     resultBox.append(cityNameEl, boxTemp, boxWind, boxHumid, boxUV);
     resultsEl.append(resultBox);
-
     //build out 5-day forecast
     var headerForecast = document.createElement('p');
     headerForecast.classList.add('is-size-3', 'has-text-black', 'px-3', 'py-2')
@@ -144,24 +163,18 @@ function displayWeatherCity(city, weatherObj) {
 // looks up weather data
 async function doWeatherLookup(myCityName) {
     let forecastData;
-    //console.log(weatherCity);
     // turn city name into geolocation coords
     let geoData = await getGeolocation(myCityName);
-    console.log(geoData.length);
     if (geoData.length === 0) {
         alert("Please enter a valid city name!");
         document.querySelector('#cityName').value = "";
         return;
-    };
+        };
     let reqLat = geoData[0].latitude;
     let reqLon = geoData[0].longitude;
-    //console.log(reqLat);
-    //console.log(reqLon);
     // now get weather for lat/lon coordinates
     let data = await weatherRequest(reqLat, reqLon);
-    //console.log(data);
     forecastData = data;
-    //console.log(forecastData);
     // now display the results
     displayWeatherCity(myCityName, forecastData);
 };
@@ -179,15 +192,19 @@ function handleSearchSubmit(event) {
     document.querySelector('#cityName').value = "";
 };
 
+// init when page loads
+cityStoredRecall();
+
 // add event listener for 'search' button
 submitSearchBtn.addEventListener('click', handleSearchSubmit);
 
+// event listener for stored cities buttons under search
 searchWrapper.addEventListener('click', (event) => {
     const isButton = event.target.nodeName === 'BUTTON';
     if (!isButton) {
       return;
     };
     let cityStoredBtn = event.target.innerHTML;
-    console.log('Button clicked is ' + cityStoredBtn);
+    // do weather lookup for saved city button
     doWeatherLookup(cityStoredBtn);
 });
