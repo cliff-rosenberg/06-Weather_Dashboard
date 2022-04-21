@@ -1,6 +1,27 @@
 // global variables here
-var citySearchEl = document.getElementById("cityName");
-var submitSearchBtn = document.getElementById("btnSearch")
+const citySearchEl = document.getElementById("cityName");
+const submitSearchBtn = document.getElementById("btnSearch");
+const searchWrapper = document.getElementById("storedBtns");
+var citiesSaved = [];
+
+// function to properly format the date for display
+function formatDate(date) {
+    return [
+      date.getMonth() + 1, 
+      date.getDate(), 
+      date.getFullYear(),
+        ].join('/');
+};
+
+// cities in local storage
+function storeCityName(cityStore) {
+    console.log('Button created for ' + cityStore);
+    // create a button for the stored search
+    let cityBtn = `<button class="button is-capitalized my-2 is-info is-fullwidth" type="submit">${cityStore}</button>`;
+    let citiesStored = document.getElementById("storedBtns");
+    citiesStored.innerHTML += cityBtn;
+    //localStorage.setItem("citiesWeather", JSON.stringify(cityObj));
+};
 
 // turn city name into geolocation coordinates
 async function getGeolocation (cityLookup) {
@@ -13,12 +34,13 @@ async function getGeolocation (cityLookup) {
     // call fetch here, wait for reply
     let resp = await fetch(url.href);
     // make sure response is not an error
-    if (resp.ok) {
-        let myReply = await resp.json();
-        return myReply;
-    } else {
+    if (!resp.ok) {
         return `HTTP error: ${resp.status}`;
-    }
+    } else {
+        let myReply = await resp.json();
+        console.log(myReply);
+        return myReply;
+    };
 };
 
 // get weather for requested location
@@ -37,28 +59,25 @@ async function weatherRequest(lat, lon) {
     let resp = await fetch(url.href);
     // make sure response is not an error
     if (resp.ok) {
-        let myReply = await resp.json();
-        return myReply;
+        let weatherReply = await resp.json();
+        return weatherReply;
     } else {
         return `HTTP error: ${resp.status}`;
     };
 };
 
-// function to properly format the date for display
-function formatDate(date) {
-    return [
-      date.getMonth() + 1, 
-      date.getDate(), 
-      date.getFullYear(),
-        ].join('/');
-};
+
 
 // build out current weather in city after data is returned
 function displayWeatherCity(city, weatherObj) {
     let cityName = city;
-    //console.log(cityFormatted);
+    //console.log(city);
+    // store city name and created a saved button
+    storeCityName(city);
+    // get date of forecast put into correct format
     let cityDate = new Date(weatherObj.current.dt * 1000);
     let formattedDate = formatDate(cityDate);
+    // value for current weather icon
     let iconUrl = weatherObj.current.weather[0].icon;
     // Attach to second column for display
     let resultsEl = document.getElementById("current-weather");
@@ -122,34 +141,53 @@ function displayWeatherCity(city, weatherObj) {
     resultsEl.append(cardsContain);
 };
 
-// handles the submitted data
-function handleSearchSubmit(event) {
-    event.preventDefault();
-    // function scoped variables
-    let weatherCity = document.querySelector('#cityName').value;
-    let reqLat = "";
-    let reqLon = "";
+// looks up weather data
+async function doWeatherLookup(myCityName) {
     let forecastData;
     //console.log(weatherCity);
     // turn city name into geolocation coords
-    getGeolocation(weatherCity).then(geoData =>{
-        //console.log(geoData);
-        reqLat = geoData[0].latitude;
-        reqLon = geoData[0].longitude;
-        //console.log(reqLat);
-        //console.log(reqLon);
-    }).then(() => {
-        // WAIT for geolocation API promise to resolve!
+    let geoData = await getGeolocation(myCityName);
+    console.log(geoData.length);
+    if (geoData.length === 0) {
+        alert("Please enter a valid city name!");
+        document.querySelector('#cityName').value = "";
+        return;
+    };
+    let reqLat = geoData[0].latitude;
+    let reqLon = geoData[0].longitude;
+    //console.log(reqLat);
+    //console.log(reqLon);
     // now get weather for lat/lon coordinates
-    weatherRequest(reqLat, reqLon).then(data => {
-       //console.log(data);
-       forecastData = data;
-    }).then(() => {
-        console.log(forecastData);
-        displayWeatherCity(weatherCity, forecastData);
-    });
-  });// end of async functions
-};// end of function wrapper
+    let data = await weatherRequest(reqLat, reqLon);
+    //console.log(data);
+    forecastData = data;
+    //console.log(forecastData);
+    // now display the results
+    displayWeatherCity(myCityName, forecastData);
+};
+
+// handles the submitted data here
+function handleSearchSubmit(event) {
+    event.preventDefault();
+    // get value passed by Input and call lookup
+    let weatherCity = document.querySelector('#cityName').value;
+    if (weatherCity) {
+    doWeatherLookup(weatherCity);
+    } else {
+        alert("Enter a valid city name!")
+    };
+    document.querySelector('#cityName').value = "";
+};
 
 // add event listener for 'search' button
 submitSearchBtn.addEventListener('click', handleSearchSubmit);
+
+searchWrapper.addEventListener('click', (event) => {
+    const isButton = event.target.nodeName === 'BUTTON';
+    if (!isButton) {
+      return;
+    };
+    let cityStoredBtn = event.target.innerHTML;
+    console.log('Button clicked is ' + cityStoredBtn);
+    doWeatherLookup(cityStoredBtn);
+});
