@@ -6,16 +6,29 @@ This project uses HTML, CSS and JavaScript to create a weather "dashboard" page.
 
 ## Installation
 
-There is no installation needed, I have the page hosted here at Github.
+There is no installation needed, I have the page hosted here at Github. [https://cliff-rosenberg.github.io/06-Weather_Dashboard/](https://cliff-rosenberg.github.io/06-Weather_Dashboard/)
 
 
 ## Usage
 
--TODO-
+Opening up the URL for the hosted page will bring up the Weather Dashboard. Enter a valid city name in the "search" field will bring up the current weather for that city as well as a five day forcast. The city name will be saved in a column on the left under the search bar for future reference if that current weather and forcast is desired again. The UV index is colored to reflect low, medium, or high levels.
 
 <h2><u>Screenshots:</u></h2>
 
--TODO-
+![Screenshot 1](Assets/images/screenshot1.png)
+
+![Screenshot 2](Assets/images/screenshot2.png)
+
+
+## Credits
+
+Two APIs were used in this project:
+
+[geocode.city](https://geocode.city/about.html) - Converts a city name to geocode coordinates
+
+[openweathermap.org](https://openweathermap.org/api/one-call-api) - OpenWeather "One Call API 1.0" for current weather and weekly forecast
+
+The page styling is controlled by the [Bulma](https://bulma.io/) CSS framework
 
 
 ## License

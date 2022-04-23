@@ -20,7 +20,7 @@ function cityStoredRecall() {
     if (stored != null) {
     citiesSaved = JSON.parse(stored);
     for (let i = 0; i < citiesSaved.length; i++) {
-        let cityBtn = `<button class="button is-capitalized my-2 is-info is-fullwidth" type="submit">${citiesSaved[i]}</button>`;
+        let cityBtn = `<button class="button is-capitalized my-2 has-background-grey-lighter has-text-black is-fullwidth" type="submit">${citiesSaved[i]}</button>`;
         let citiesPrev = document.getElementById("storedBtns");
         citiesPrev.innerHTML += cityBtn;
         };
@@ -40,7 +40,7 @@ function buttonCityName(cityStore) {
         };
     };
     // create a button for the city
-    let cityBtn = `<button class="button is-capitalized my-2 is-info is-fullwidth" type="submit">${cityStore}</button>`;
+    let cityBtn = `<button class="button is-capitalized my-2 has-background-grey-lighter has-text-black is-fullwidth" type="submit">${cityStore}</button>`;
     let citiesPrev = document.getElementById("storedBtns");
     citiesPrev.innerHTML += cityBtn;
     citiesSaved.push(cityStore);
@@ -77,7 +77,7 @@ async function weatherRequest(lat, lon) {
     let url = new URL('https://api.openweathermap.org/data/2.5/onecall');
     let params = {'lat': cityLat, 'lon': cityLon, 'units': 'imperial', 'exclude': 'minutely,hourly','appid': '8ee63a0ac1d7da64365a8cddccb9a29f'};
     url.search = new URLSearchParams(params);
-    console.log(url.href);  // put URL sent to 'fetch' into console window
+    //console.log(url.href);  // put URL sent to 'fetch' into console window
     // call fetch here, wait for reply
     let resp = await fetch(url.href);
     // make sure response is not an error
@@ -125,11 +125,21 @@ function displayWeatherCity(city, weatherObj) {
     boxHumid.classList.add('py-3');
     boxHumid.innerHTML = "Humidity: " + weatherObj.current.humidity + " %";
     // Display current UV index for city searched
-    let boxUV = document.createElement('p');
-    boxUV.classList.add('pb-3');
-    boxUV.innerHTML = "UV Index: " + weatherObj.current.uvi;
+    let UVcolor = "is-success";
+    if (weatherObj.current.uvi >= 3) {
+        UVcolor = "is-warning";
+        };
+    if (weatherObj.current.uvi >= 8) {
+        UVcolor = "is-danger";
+        };
+    let boxUVtxt = document.createElement('span');
+    boxUVtxt.classList.add('pb-3');
+    boxUVtxt.innerHTML = "UV Index: ";
+    let boxUVtag = document.createElement('span');
+    boxUVtag.classList.add('tag', 'is-medium', UVcolor);
+    boxUVtag.innerHTML =  weatherObj.current.uvi;
     // Build out current weather box
-    resultBox.append(cityNameEl, boxTemp, boxWind, boxHumid, boxUV);
+    resultBox.append(cityNameEl, boxTemp, boxWind, boxHumid, boxUVtxt, boxUVtag);
     resultsEl.append(resultBox);
     //build out 5-day forecast
     var headerForecast = document.createElement('p');
@@ -139,7 +149,7 @@ function displayWeatherCity(city, weatherObj) {
     // cards for daily forecast
     var cardsContain = document.createElement('div');
     cardsContain.classList.add('columns', 'm-1');
-    for (let i = 0; i < 5; i++) {
+    for (let i = 1; i < 6; i++) {
         let tempDate = new Date(weatherObj.daily[i].dt * 1000);
         let forecastDate = formatDate(tempDate);
         let forecastIcon = weatherObj.daily[i].weather[0].icon;
@@ -176,6 +186,7 @@ async function doWeatherLookup(myCityName) {
     let data = await weatherRequest(reqLat, reqLon);
     forecastData = data;
     // now display the results
+    console.log(forecastData);
     displayWeatherCity(myCityName, forecastData);
 };
 
