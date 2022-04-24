@@ -53,8 +53,8 @@ async function getGeolocation (cityLookup) {
     let url = new URL('https://api.geocode.city/search');
     let params = {'name': cityLookup, 'limit': '1'};
     url.search = new URLSearchParams(params);
-    // put URL sent to 'fetch' into console window
-    console.log(url.href);
+    // put URL sent to 'fetch' into console window - testing only
+    //console.log(url.href);
     // call fetch here, wait for reply
     let resp = await fetch(url.href);
     // make sure response is not an error
@@ -77,7 +77,8 @@ async function weatherRequest(lat, lon) {
     let url = new URL('https://api.openweathermap.org/data/2.5/onecall');
     let params = {'lat': cityLat, 'lon': cityLon, 'units': 'imperial', 'exclude': 'minutely,hourly','appid': '8ee63a0ac1d7da64365a8cddccb9a29f'};
     url.search = new URLSearchParams(params);
-    //console.log(url.href);  // put URL sent to 'fetch' into console window
+    // put URL sent to 'fetch' into console window - testing only
+    //console.log(url.href);
     // call fetch here, wait for reply
     let resp = await fetch(url.href);
     // make sure response is not an error
@@ -186,7 +187,7 @@ async function doWeatherLookup(myCityName) {
     let data = await weatherRequest(reqLat, reqLon);
     forecastData = data;
     // now display the results
-    console.log(forecastData);
+    //console.log(forecastData);
     displayWeatherCity(myCityName, forecastData);
 };
 
